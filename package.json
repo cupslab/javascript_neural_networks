@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build-browser": "rm -rf build && mkdir build && browserify src/neuralnet.js -t babelify -p [minifyify --no-map] --standalone NeuralNet -o build/neocortex.min.js && echo \"NeuralNet=NeuralNet.default\" >> build/neocortex.min.js",
+    "build-browser-debug": "rm -rf build && mkdir build && browserify src/neuralnet.js -t babelify --standalone NeuralNet -o build/neocortex.js && echo \"NeuralNet=NeuralNet.default\" >> build/neocortex.js",
     "build-node": "rm -rf dist && node_modules/.bin/babel src --out-dir dist",
     "build": "npm run build-node && npm run build-browser",
     "prepublish": "npm run build",

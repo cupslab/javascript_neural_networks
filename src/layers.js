@@ -4,7 +4,7 @@ import { flattenLayer } from './layers/flatten';
 import { embeddingLayer } from './layers/embedding';
 import { batchNormalizationLayer } from './layers/normalization';
 import { leakyReLULayer, parametricReLULayer, parametricSoftplusLayer, thresholdedLinearLayer, thresholdedReLuLayer } from './layers/advanced_activations';
-import { rLSTMLayer, rGRULayer, rJZS1Layer, rJZS2Layer, rJZS3Layer } from './layers/recurrent';
+import { rLSTMLayer, rGRULayer, rJZS1Layer, rJZS2Layer, rJZS3Layer, repeatVector, timeDistributedDense } from './layers/recurrent';
 import { convolution2DLayer, maxPooling2DLayer, convolution1DLayer, maxPooling1DLayer } from './layers/convolutional';
 
 export {
@@ -26,5 +26,7 @@ export {
   convolution2DLayer,
   maxPooling2DLayer,
   convolution1DLayer,
-  maxPooling1DLayer
+  maxPooling1DLayer,
+  repeatVector,
+  timeDistributedDense
 };

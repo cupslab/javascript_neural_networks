@@ -2,7 +2,7 @@ import assert from 'assert';
 import almostEqual from 'almost-equal';
 import ndarray from 'ndarray';
 import pack from '../src/lib/ndarray-pack';
-import { rLSTMLayer, rGRULayer, rJZS1Layer, rJZS2Layer, rJZS3Layer } from '../src/layers/recurrent';
+import { rLSTMLayer, rGRULayer, rJZS1Layer, rJZS2Layer, rJZS3Layer, repeatVector } from '../src/layers/recurrent';
 
 const EPSILON = almostEqual.FLT_EPSILON;
 
@@ -145,6 +145,22 @@ describe('Layer: recurrent', function() {
       assert.deepEqual(y.shape, [3]);
       for (let i = 0; i < y.shape[0]; i++) {
         assert(almostEqual(y.get(i), expected[i], EPSILON, EPSILON));
+      }
+      done();
+    });
+  });
+
+  describe('Repeat vector', function() {
+    it('should output the correct state', (done) => {
+      var input_rv = pack(Float64Array, [[[1.1, 2.0], [3.9, 4.0]],
+                                         [[5.0, 6.0], [7.4, 8.0]]]);
+      var rv = repeatVector(arrayType, input_rv, 1);
+      var expected = new Float64Array([1.1, 2.0, 5.0, 6.0,
+                                       3.9, 4.0, 7.4, 8.0]);
+      assert.deepEqual(rv.shape, [2, 2, 2]);
+      console.log(expected, rv);
+      for (var i = 0; i < rv.size; i++) {
+        assert(almostEqual(rv.get(i), expected[i], EPSILON, EPSILON));
       }
       done();
     });

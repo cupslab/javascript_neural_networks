@@ -3,6 +3,8 @@ import json
 import gzip
 
 layer_name_dict = {
+    'RepeatVector' : 'repeatVector',
+    'TimeDistributedDense' : 'timeDistributedDense',
     'Dense': 'denseLayer',
     'Dropout': 'dropoutLayer',
     'Flatten': 'flattenLayer',
@@ -25,6 +27,8 @@ layer_name_dict = {
 }
 
 layer_params_dict = {
+    'RepeatVector' : ['n'],
+    'TimeDistributedDense' : ['weights', 'activation'],
     'Dense': ['weights', 'activation'],
     'Dropout': ['p'],
     'Flatten': [],
@@ -47,7 +51,9 @@ layer_params_dict = {
 }
 
 layer_weights_dict = {
+    'RepeatVector' : [],
     'Dense': ['W', 'b'],
+    'TimeDistributedDense' : ['W', 'b'],
     'Embedding': ['E'],
     'BatchNormalization': ['gamma', 'beta', 'mean', 'std'],
     'PReLU': ['alphas'],

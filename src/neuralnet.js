@@ -7,7 +7,7 @@ import pack from './lib/ndarray-pack';
 import unpack from 'ndarray-unpack';
 import * as layerFuncs from './layers';
 
-let readFile = Promise.promisify(fs.readFile);
+// let readFile = Promise.promisify(fs.readFile);
 let gunzip = Promise.promisify(zlib.gunzip);
 
 export default class NeuralNet {

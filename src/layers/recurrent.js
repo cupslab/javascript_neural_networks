@@ -5,10 +5,10 @@ import mvprod from '../lib/cpu/matrix-vector-product';
 import * as activationFuncs from '../functions/activations';
 
 /*
-* Recurrent neural network layers
-*
-* shape of input tensor: timesteps x dimensions
-*/
+ * Recurrent neural network layers
+ *
+ * shape of input tensor: timesteps x dimensions
+ */
 
 ///////////////////////////////////////////////////////
 // LSTM
@@ -350,7 +350,11 @@ export function rJZS2Layer(arrayType, x, weights, activation='tanh', inner_activ
     }
   }
 
-  return h_t;
+  if (return_sequences) {
+    return h_seq;
+  } else {
+    return h_t;
+  }
 }
 
 
@@ -436,4 +440,22 @@ export function rJZS3Layer(arrayType, x, weights, activation='tanh', inner_activ
   }
 
   return h_t;
+}
+
+export function repeatVector(arrayType, x, n) {
+  if (n != 1) {
+    throw 'Repeat vector only supports 1 argument';
+  }
+  var answer = ndarray(x.data, x.shape.concat([1]));
+  return answer.transpose(1, 0);
+}
+
+export function timeDistributedDense(arrayType, x, weights, activation) {
+  var W = pack(arrayType, weights['W']);
+  var b = pack(arrayType, weights['b']);
+  var y = ndarray(new arrayType(W.shape[1]), [W.shape[1]]);
+  mvprod(y, W.transpose(1, 0), ndarray(x.data, [x.shape[0]]));
+  ops.addeq(y, b);
+  activationFuncs[activation](y);
+  return y;
 }
