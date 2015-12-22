@@ -1,14 +1,38 @@
-import fs from 'fs';
-import zlib from 'zlib';
-import Promise from 'bluebird';
-import request from 'axios';
-import ndarray from 'ndarray';
 import pack from './lib/ndarray-pack';
 import unpack from 'ndarray-unpack';
+import msgpack from 'msgpack-lite';
 import * as layerFuncs from './layers';
 
-// let readFile = Promise.promisify(fs.readFile);
-let gunzip = Promise.promisify(zlib.gunzip);
+var weight_first_list = [
+  'timeDistributedDense', 'denseLayer', 'embeddingLayer',
+  'batchNormalizationLayer', 'parametricReLULayer', 'parametricSoftplusLayer',
+  'rLSTMLayer', 'rGRULayer', 'rJZS1Layer', 'rJZS2Layer', 'rJZS3Layer',
+  'convolution2DLayer', 'convolution1DLayer'];
+
+function recursive_translate(object, factor) {
+  for (var key in object) {
+    var value = object[key];
+    if (typeof value === 'number') {
+      object[key] = value / factor;
+    } else if (typeof value === 'object') {
+      recursive_translate(value, factor);
+    }
+  }
+  return object;
+}
+
+function unpack_from_msg(data, scale_factor) {
+  var pre_layers = msgpack.decode(new Uint8Array(data));
+  var answer = [];
+  for (var ln = 0; ln < pre_layers.length; ln++) {
+    var layer = pre_layers[ln];
+    if (weight_first_list.indexOf(layer.layerName) != -1) {
+      layer.parameters = recursive_translate(layer.parameters, scale_factor);
+    }
+    answer.push(layer);
+  }
+  return answer;
+}
 
 export default class NeuralNet {
   constructor(config) {
@@ -34,39 +58,33 @@ export default class NeuralNet {
 
     this._modelFilePath = config.modelFilePath || null;
     this._layers = [];
+    this._msg_pck_fmt = config.msgPackFmt || false;
   }
 
-  init() {
+  init(callback) {
     if (!this._modelFilePath) {
       throw new Error('no modelFilePath specified in config object.');
     }
 
-    if (this._environment === 'browser' || this._environment === 'webworker') {
-      return request.get(this._modelFilePath)
-        .then(res => {
-          if (res.status == 200) {
-            this._layers = res.data;
-          } else {
-            throw new Error('error loading model file.');
-          }
-        })
-        .catch(err => { throw err; });
-    } else if (this._environment === 'node') {
-      if (this._modelFilePath.endsWith('.json.gz')) {
-        return Promise.resolve(this._modelFilePath)
-          .then(readFile)
-          .then(gunzip)
-          .then(JSON.parse)
-          .then(data => { this._layers = data; })
-          .catch(err => { throw err; });
-      } else if (this._modelFilePath.endsWith('.json')) {
-        return Promise.resolve(this._modelFilePath)
-          .then(readFile)
-          .then(JSON.parse)
-          .then(data => { this._layers = data; })
-          .catch(err => { throw err; });
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', this._modelFilePath, true);
+    xhr.responseType = 'text';
+    xhr.onload = (function() {
+      if (xhr.status !== 200) {
+        console.error(xhr.status);
+        return;
       }
-    }
+      var resp = xhr.response;
+      if (this._msg_pck_fmt) {
+        this._layers = unpack_from_msg(resp, this._msg_pck_fmt);
+      } else {
+        this._layers = JSON.parse(resp);
+      }
+      console.log(this._layers[0].parameters[0].b_r);
+      callback();
+    }).bind(this);
+    xhr.responseType = 'arraybuffer';
+    xhr.send();
   }
 
   predict(input) {
