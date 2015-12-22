@@ -80,7 +80,6 @@ export default class NeuralNet {
       } else {
         this._layers = JSON.parse(resp);
       }
-      console.log(this._layers[0].parameters[0].b_r);
       callback();
     }).bind(this);
     xhr.responseType = 'arraybuffer';
