@@ -1,5 +1,5 @@
 {
-  "name": "neocortex-js",
+  "name": "neocortex-rnn",
   "version": "0.4.2",
   "description": "Run trained neural networks in the browser or node.js",
   "main": "dist/index.js",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/transcranial/neocortex.git"
+    "url": "git+ssh://wmeliche@grey4.andrew.cmu.edu/home/wmeliche/nn/neocortex"
   },
   "keywords": [
     "neuralnet",
