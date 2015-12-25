@@ -58,7 +58,8 @@
     "ndarray": "^1.0.18",
     "ndarray-blas-level1": "^1.1.1",
     "ndarray-ops": "^1.2.2",
-    "ndarray-unpack": "^1.0.0"
+    "ndarray-unpack": "^1.0.0",
+    "msgpack-lite": "^1.1.14"
   },
   "browserify" : {
     "transform" : [
