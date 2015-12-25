@@ -1,6 +1,5 @@
 test/
 examples/
-.babelrc
 .eslintignore
 .eslintrc
 .git/
