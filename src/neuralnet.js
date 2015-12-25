@@ -9,25 +9,36 @@ var weight_first_list = [
   'rLSTMLayer', 'rGRULayer', 'rJZS1Layer', 'rJZS2Layer', 'rJZS3Layer',
   'convolution2DLayer', 'convolution1DLayer'];
 
-function recursive_translate(object, factor) {
+function recursive_translate(object, factor, zigzag) {
   for (var key in object) {
     var value = object[key];
     if (typeof value === 'number') {
-      object[key] = value / factor;
+      var temp;
+      if (zigzag) {
+        temp = value >> 1;
+        if (value % 2 == 1) {
+          temp *= -1;
+        }
+        object[key] = temp / factor;
+      } else {
+        temp = value;
+      }
+      object[key] = temp / factor;
     } else if (typeof value === 'object') {
-      recursive_translate(value, factor);
+      recursive_translate(value, factor, zigzag);
     }
   }
   return object;
 }
 
-function unpack_from_msg(data, scale_factor) {
+function unpack_from_msg(data, scale_factor, zigzag_encoding) {
   var pre_layers = msgpack.decode(new Uint8Array(data));
   var answer = [];
   for (var ln = 0; ln < pre_layers.length; ln++) {
     var layer = pre_layers[ln];
     if (weight_first_list.indexOf(layer.layerName) != -1) {
-      layer.parameters = recursive_translate(layer.parameters, scale_factor);
+      layer.parameters = recursive_translate(
+        layer.parameters, scale_factor, zigzag_encoding);
     }
     answer.push(layer);
   }
@@ -59,6 +70,7 @@ export default class NeuralNet {
     this._modelFilePath = config.modelFilePath || null;
     this._layers = [];
     this._msg_pck_fmt = config.msgPackFmt || false;
+    this._zig_zag_encoding = config.zigzagEncoding || false;
   }
 
   init(callback) {
@@ -76,7 +88,8 @@ export default class NeuralNet {
       }
       var resp = xhr.response;
       if (this._msg_pck_fmt) {
-        this._layers = unpack_from_msg(resp, this._msg_pck_fmt);
+        this._layers = unpack_from_msg(
+          resp, this._msg_pck_fmt, this._zig_zag_encoding);
       } else {
         this._layers = JSON.parse(resp);
       }
