@@ -1,6 +1,5 @@
 import pack from './lib/ndarray-pack';
 import unpack from 'ndarray-unpack';
-import msgpack from 'msgpack-lite';
 import * as layerFuncs from './layers';
 
 export default class NeuralNet {
