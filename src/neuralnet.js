@@ -31,8 +31,7 @@ function recursive_translate(object, factor, zigzag) {
   return object;
 }
 
-function unpack_from_msg(data, scale_factor, zigzag_encoding) {
-  var pre_layers = msgpack.decode(new Uint8Array(data));
+function translate(pre_layers, scale_factor, zigzag_encoding) {
   var answer = [];
   for (var ln = 0; ln < pre_layers.length; ln++) {
     var layer = pre_layers[ln];
@@ -43,6 +42,11 @@ function unpack_from_msg(data, scale_factor, zigzag_encoding) {
     answer.push(layer);
   }
   return answer;
+}
+
+function unpack_from_msg(data, scale_factor, zigzag_encoding) {
+  return translate(msgpack.decode(new Uint8Array(data)),
+                   scale_factor, zigzag_encoding);
 }
 
 export default class NeuralNet {
@@ -71,6 +75,7 @@ export default class NeuralNet {
     this._layers = [];
     this._msg_pck_fmt = config.msgPackFmt || false;
     this._zig_zag_encoding = config.zigzagEncoding || false;
+    this._scale_factor = config.scaleFactor || false;
   }
 
   init(callback) {
@@ -87,9 +92,14 @@ export default class NeuralNet {
         return;
       }
       var resp = xhr.response;
-      if (this._msg_pck_fmt) {
-        this._layers = unpack_from_msg(
-          resp, this._msg_pck_fmt, this._zig_zag_encoding);
+      if (this._scale_factor) {
+        if (this._msg_pck_fmt) {
+          this._layers = unpack_from_msg(
+            resp, this._scale_factor, this._zig_zag_encoding);
+        } else {
+          this._layers = translate(JSON.parse(resp),
+                                   this._scale_factor, this._zig_zag_encoding);
+        }
       } else {
         this._layers = JSON.parse(resp);
       }
