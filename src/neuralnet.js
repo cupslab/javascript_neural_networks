@@ -91,17 +91,16 @@ export default class NeuralNet {
         console.error(xhr.status);
         return;
       }
-      var resp = xhr.response;
       if (this._scale_factor) {
         if (this._msg_pck_fmt) {
           this._layers = unpack_from_msg(
-            resp, this._scale_factor, this._zig_zag_encoding);
+            xhr.response, this._scale_factor, this._zig_zag_encoding);
         } else {
-          this._layers = translate(JSON.parse(resp),
+          this._layers = translate(JSON.parse(xhr.responseText),
                                    this._scale_factor, this._zig_zag_encoding);
         }
       } else {
-        this._layers = JSON.parse(resp);
+        this._layers = JSON.parse(xhr.responseText);
       }
       callback();
     }).bind(this);
