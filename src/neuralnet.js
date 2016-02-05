@@ -104,7 +104,9 @@ export default class NeuralNet {
       }
       callback();
     }).bind(this);
-    xhr.responseType = 'arraybuffer';
+    if (this._msg_pck_fmt) {
+      xhr.responseType = 'arraybuffer';
+    }
     xhr.send();
   }
 
