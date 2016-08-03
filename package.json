@@ -1,6 +1,6 @@
 {
-  "name": "neocortex-rnn",
-  "version": "0.4.2",
+  "name": "neocortex-rnn-cups",
+  "version": "0.4.3",
   "description": "Run trained neural networks in the browser or node.js",
   "main": "src/index.js",
   "directories": {
@@ -15,10 +15,6 @@
     "test": "mocha --reporter spec --compilers js:babel-core/register",
     "examples-server": "npm run build-browser && cp build/neocortex.min.js examples && node examples/server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://wmeliche@grey4.andrew.cmu.edu/home/wmeliche/nn/neocortex"
-  },
   "keywords": [
     "neuralnet",
     "neuralnets",
@@ -31,12 +27,7 @@
     "learning",
     "keras"
   ],
-  "author": "Leon Chen <lchen3@gmail.com> (@transcranial)",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/transcranial/neocortex/issues"
-  },
-  "homepage": "https://github.com/transcranial/neocortex#readme",
+  "author": "William Melicher",
   "devDependencies": {
     "almost-equal": "^1.0.0",
     "babel-cli": "^6.2.0",
