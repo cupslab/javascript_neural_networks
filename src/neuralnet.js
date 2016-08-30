@@ -112,8 +112,8 @@ export default class NeuralNet {
 
   predict(input) {
     let _predict = (X) => {
-      for (let layer of this._layers) {
-        let { layerName, parameters } = layer;
+      for (var x = 0; x < this._layers.length; x++) {
+        let { layerName, parameters } = this._layers[x];
         X = layerFuncs[layerName](this._arrayType, X, ...parameters);
       }
       return X;
